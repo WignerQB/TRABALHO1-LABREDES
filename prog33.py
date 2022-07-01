@@ -1,11 +1,12 @@
 import socket
 import pickle
 import time
+import sys
 
 
 t3 = time.time()
 try:
-    HOST = '192.168.124.18'
+    HOST = sys.argv[1]
     PORT = 9000
 
     Socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

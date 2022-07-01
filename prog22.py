@@ -2,9 +2,10 @@ import socket
 import pickle
 import time
 import numpy as np
+import sys
 
 t2 = time.time()
-HOST = '192.168.124.2'
+HOST = sys.argv[1]
 PORT = 8000
 Socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -12,6 +13,13 @@ Socket1.bind((HOST, PORT))
 Socket1.listen(5)
 print(" ")
 print('Conectando...')
+
+
+def MontarMatrizes(RecDados):
+    Arquivo=pk.loads(b"".join(RecDados))
+    print(Arquivo)
+    return Arquivo
+
 
 while True:
     try:
@@ -28,15 +36,16 @@ Mdets = []
 
 while True:
     RecDados = conn.recv(1024)
-    if RecDados == b'':
-        Socket1.close()
-        break
     Dados.append(RecDados)
-    DadosTrat = pickle.loads(b''.join(Dados))
-    Inversa = np.linalg.inv(DadosTrat['Matrizes'])
-    Determinante = np.linalg.det(Inversa)
-    Minvs.append(Inversa)
-    Mdets.append(Determinante)
+    if Dados[-1] == b'\x80\x04\x95\x07\x00\x00\x00\x00\x00\x00\x00\x8c\x03fim\x94.':
+        Dados.pop(-1)
+        DadosTrat = MontarMatrizes(RecDados)
+        DadosTrat = pickle.loads(b''.join(Dados))
+        Inversa = np.linalg.inv(DadosTrat['Matrizes'])
+        Determinante = np.linalg.det(Inversa)
+        Minvs.append(Inversa)
+        Mdets.append(Determinante)
+        break
 
 Tempo1 = DadosTrat['Tempo']
 Tempo2 = float(Tempo1[0]) + time.time() - t2
@@ -48,7 +57,7 @@ Dicionario['Tempo'] = Tempo2
 print(" ")
 print("Matrizes recebidas e calculadas!")
 
-HOST2 = '192.168.124.18'
+HOST2 = sys.argv[2]
 PORT2 = 9000
 
 print(" ")

@@ -2,8 +2,9 @@ import socket
 import pickle
 import time
 import numpy as np
+import sys
 
-HOST = '192.168.124.2'
+HOST = sys.argv[1]
 PORT = 8000
 
 Lista_matrizes = []
