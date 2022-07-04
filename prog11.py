@@ -55,22 +55,27 @@ while True:
 
     Pacote = pickle.dumps(Dicionario)
     #Cálculo do tamanho do pacote
-    TamPacote = len(Pacote)
-    NEnvios = int(TamPacote/1024) + 1
-    print("Tamanho do pacote a ser enviado: ", TamPacote)
-    print("Será feito ",NEnvios, " envios de até 1024 bytes!")
-    
-    if NEnvios == 1:
-        Socket.sendall(bytes(Pacote))
-        print("Pacote enviado!")
+    TamPacote = sys.getsizeof(Pacote)
+    QtPac = int(TamPacote/1024) + 1
+    print("TamPacote: ", TamPacote)
+    print("QtPac: ", QtPac)
+
+    if QtPac == 1:
+        Dados = Pacote
     else:
-        for Naux in range(NEnvios+1):
-            if Naux > 0:
-                LimInf = (Naux-1)*1024
-                LimSup = Naux*1023
+        Dados = []
+        for i in range(QtPac+1):
+            if i > 0:
+                LimInf = (i-1)*1024
+                if i == 1:
+                    LimSup = 1023
+                else:
+                    LimSup = i*1023 + 1
                 PacoteAux = Pacote[LimInf:LimSup]
-                Socket.sendall(bytes(PacoteAux))
-                print("Pacote ", Naux, " enviado!")
+                Dados.append(str(PacoteAux))
+
+    Socket.sendall(bytes(pickle.dumps(Dados)))
+    print("Dados enviados!")
     #time.sleep(5)
     Socket.close()
     break

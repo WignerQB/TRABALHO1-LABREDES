@@ -36,16 +36,21 @@ Mdets = []
 
 while True:
     RecDados = conn.recv(1024)
+    if RecDados == b'':
+        Socket1.close()
+        break
     Dados.append(RecDados)
-    if Dados[-1] == b'\x80\x04\x95\x07\x00\x00\x00\x00\x00\x00\x00\x8c\x03fim\x94.':
-        Dados.pop(-1)
-        DadosTrat = MontarMatrizes(RecDados)
-        DadosTrat = pickle.loads(b''.join(Dados))
+    DadosTrat = pickle.loads(b''.join(Dados))
+    print("\n", DadosTrat, type(DadosTrat), "\n")
+    try:
         Inversa = np.linalg.inv(DadosTrat['Matrizes'])
         Determinante = np.linalg.det(Inversa)
         Minvs.append(Inversa)
         Mdets.append(Determinante)
-        break
+    except:
+        if type(DadosTrat) == type(15):
+            print("Número de pacotes recebidos: ", DadosTrat)
+
 
 Tempo1 = DadosTrat['Tempo']
 Tempo2 = float(Tempo1[0]) + time.time() - t2
@@ -57,7 +62,7 @@ Dicionario['Tempo'] = Tempo2
 print(" ")
 print("Matrizes recebidas e calculadas!")
 
-HOST2 = sys.argv[2]
+HOST2 = '192.168.124.18'
 PORT2 = 9000
 
 print(" ")
@@ -71,3 +76,5 @@ while True:
     time.sleep(3)
     Socket2.close()
     break
+
+
