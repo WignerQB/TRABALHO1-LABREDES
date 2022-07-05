@@ -78,7 +78,7 @@ while True:
             Socket2.sendall(i)
         time.sleep(0.1)
         Socket2.sendall(pickle.dumps('PacEnv'))
-        print("Dados (determinante, inversa do determinante e tempo) enviados!")
+        print("Dados (Matriz inversa, determinante da matriz inversa e tempo) enviados!")
         Socket2.close()
     else:
         while TamPacs>1024:  #Garantir o tamanho máximo de 1024 bytes
@@ -97,7 +97,7 @@ while True:
             Socket2.sendall(i)
         time.sleep(0.1)
         Socket2.sendall(pickle.dumps('PacEnv'))
-        print("Dados (determinante, inversa do determinante e tempo) enviados!")
+        print("Dados (Matriz inversa, determinante da matriz inversa e tempo) enviados!")
         Socket2.close()
     break
 
