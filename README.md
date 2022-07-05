@@ -6,6 +6,7 @@ https://pt.linux-console.net/?p=262
 </code>
 <br></br>
 2) Execute os comandos na sequência abaixo:
+<br></br>
 <code>
   python3 prog33.py <i>ip-interface1-máquina3</i>
 </code>
