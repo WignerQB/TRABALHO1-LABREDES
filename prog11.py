@@ -44,8 +44,6 @@ while True:
     print(" ")
     for i in range(n):
         m = np.random.randint(99, size=(tam, tam))
-        print(m)
-        print(" ")
         Lista_matrizes.append(m)
 
     Tempo1 = time.time() - t1
@@ -54,28 +52,44 @@ while True:
     Dicionario['Tempo'] = Tempo
 
     Pacote = pickle.dumps(Dicionario)
-    #Cálculo do tamanho do pacote
-    TamPacote = sys.getsizeof(Pacote)
-    QtPac = int(TamPacote/1024) + 1
-    print("TamPacote: ", TamPacote)
-    print("QtPac: ", QtPac)
+
+    PacBytes = sys.getsizeof(Pacote) #Tamanho do Pacote em bytes
+    QtPac = int(np.ceil(PacBytes/1024)) #Quantidade necessário de pacotes para enviar
+    TamPacs = int(len(Pacote)/QtPac) #Tamanho do pacote
+    TamPacsBytes = sys.getsizeof(Pacote[:TamPacs]) #Tamanho do pacote em bytes
+    #print("TamPacsBytes: ", TamPacsBytes)
+    #print("QtPac: ", QtPac)
+
+    Dados = []
 
     if QtPac == 1:
-        Dados = Pacote
+        Dados.append(Pacote)
+        for i in Dados:
+            Socket.sendall(i)
+        time.sleep(0.1)
+        Socket.sendall(pickle.dumps('PacEnv'))
+        #print('\n', pickle.dumps('PacEnv'), '\n')
+        print("Dados (matrizes e tempo) enviados!")
+        Socket.close()
     else:
-        Dados = []
-        for i in range(QtPac+1):
-            if i > 0:
-                LimInf = (i-1)*1024
-                if i == 1:
-                    LimSup = 1023
-                else:
-                    LimSup = i*1023 + 1
-                PacoteAux = Pacote[LimInf:LimSup]
-                Dados.append(str(PacoteAux))
+        while TamPacs>1024:  #Garantir o tamanho máximo de 1024 bytes
+              QtPac += 2
+              TamPacs = int(len(Pacote)/QtPac)
+              TamPacsBytes = sys.getsizeof(Pacote[:TamPacs])
 
-    Socket.sendall(bytes(pickle.dumps(Dados)))
-    print("Dados enviados!")
-    #time.sleep(5)
-    Socket.close()
+        for i in range(QtPac):  #Lista com os pacotes
+             PacoteAux = Pacote[(i)*TamPacs:(i+1)*TamPacs]
+             Dados.append(PacoteAux)
+
+             if i==(QtPac-1) and (i+1)*TamPacs<len(Pacote): #Garantir que tudo esta dentro da lista
+                PacoteAux=Pacote[(i+1)*TamPacs:]
+                Dados.append(PacoteAux)
+        for i in Dados:
+            Socket.sendall(i)
+        time.sleep(0.1)
+        Socket.sendall(pickle.dumps('PacEnv'))
+        #print('\n', pickle.dumps('PacEnv'), '\n')
+        print("Dados (matrizes e tempo) enviados!")
+        Socket.close()
     break
+

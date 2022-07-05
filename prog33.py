@@ -5,6 +5,11 @@ import sys
 
 
 t3 = time.time()
+
+def MontarArq(RecDados):
+    Arquivo = pickle.loads(b"".join(RecDados))
+    return Arquivo
+
 try:
     HOST = sys.argv[1]
     PORT = 9000
@@ -25,24 +30,24 @@ except:
 Dados = []
 
 while True:
-    DadosRec = conn.recv(1024)
-    if DadosRec == b'':
-       break
-    Dados.append(DadosRec)
-    DadosTrat = pickle.loads(b''.join(Dados))
-    #Inversa = DadosTrat['MatrizInversa']
-    Determinante = DadosTrat['Determinantes']
-    Tempo2 = DadosTrat['Tempo']
-    print(" ")
-    print("Determinante da inversa: ")
-    print(Determinante)
-    print(" ")
-    #print("Matriz inversa: ")
-    #print(Inversa)
-    #print(" ")
+    RecDados = conn.recv(2048)
+    Dados.append(RecDados)
+    if Dados[-1] == b'\x80\x04\x95\n\x00\x00\x00\x00\x00\x00\x00\x8c\x06PacEnv\x94.':
+        Dados.pop(-1)
+        DadosTrat = MontarArq(Dados)
+        break
 
-    Tempo2 = round(Tempo2,4)
-    TempoFinal = Tempo2 + time.time() - t3
+Determinante = DadosTrat['Determinantes']
+Inversa = DadosTrat['MatrizInversa']
+Tempo2 = DadosTrat['Tempo']
 
-    print("Tempo de processamento (ms): ")
-    print(round(TempoFinal,2))
+print("Matriz inversa: ")
+print(Inversa, '\n')
+print("Determinante da  inversa: ")
+print(Determinante, '\n')
+
+Tempo2 = round(Tempo2,4)
+TempoFinal = Tempo2 + time.time() - t3
+
+print("Tempo de processamento (ms): ")
+print(round(TempoFinal,2))
