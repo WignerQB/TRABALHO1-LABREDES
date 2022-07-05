@@ -1,7 +1,8 @@
 # TRABALHO1-LABREDES
 
+
 <code>
-  python3 prog11.py <i>ip-interface1-máquina2</i>
+  python3 prog33.py <i>ip-interface1-máquina3</i>
 </code>
 <br></br>
 <code>
@@ -9,5 +10,5 @@
 </code>
 <br></br>
 <code>
-  python3 prog33.py <i>ip-interface1-máquina3</i>
+  python3 prog11.py <i>ip-interface1-máquina2</i>
 </code>
